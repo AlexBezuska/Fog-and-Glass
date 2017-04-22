@@ -27,6 +27,8 @@ var app = new PIXI.Application(800, 800, {
 antialias: false
 });
 document.body.appendChild(app.view);
+
+
 var alwaysThere = [
   { zindex: 0, image: "/img/ld38-terrarium_0010_bubble-back.png"},
   { zindex: 1, image: "/img/ld38-terrarium_0009_dirt.png"},
@@ -78,8 +80,8 @@ mushroom.images = [
   { zindex: 20, image: "/img/_0005_mushroom6.png" },
   { zindex: 20, image: "/img/_0006_mushroom7.png" },
   { zindex: 20, image: "/img/_0007_mushroom8.png" },
-  { zindex: 20, image: "/img/_0008_mushroom9.png" },
-  { zindex: 20, image: "/img/_0009_mushroom10.png", peak: true},
+  { zindex: 20, image: "/img/_0008_mushroom9.png", peak: true },
+  { zindex: 20, image: "/img/_0009_mushroom10.png"},
   { zindex: 20, image: "/img/_0010_mushroom11.png" },
   { zindex: 20, image: "/img/_0011_mushroom12.png" },
   { zindex: 20, image: "/img/_0012_mushroom13.png" }
@@ -111,20 +113,75 @@ function addOverTime(element, delta){
 
 
 }
-// { timestamp: 1000, zindex: 20, image: "/img/ld38-terrarium_0005_mushroom.png" },
-// { timestamp: 1500, zindex: 30, image: "/img/ld38-terrarium_0008_fern.png" }
 
-// var time = 0;
-// var element = 0;
-//
-// function waitForNext(time, next) {
-//   if (time > next) {
-//     console.log();
-//     addElement(timedElements[frame]);
-//     ++;
-//     console.log(element);
-//   }
-// }
+
+var player = addElement({
+width: 128,
+height: 128,
+zindex: 1000,
+image: "/img/farae-single.png"
+});
+player.vx = 0;
+  player.vy = 0;
+
+
+
+
+var playerSpeed = 7;
+//Capture the keyboard arrow keys
+  var left = keyboard(37),
+      up = keyboard(38),
+      right = keyboard(39),
+      down = keyboard(40);
+
+  //Left arrow key `press` method
+  left.press = function() {
+    console.log("left press");
+    player.vx = -playerSpeed;
+    player.vy = 0;
+  };
+
+  //Left arrow key `release` method
+  left.release = function() {
+    if (!right.isDown && player.vy === 0) {
+      player.vx = 0;
+    }
+  };
+
+  //Up
+  up.press = function() {
+    player.vy = -playerSpeed;
+    player.vx = 0;
+  };
+  up.release = function() {
+    if (!down.isDown && player.vx === 0) {
+      player.vy = 0;
+    }
+  };
+
+  //Right
+  right.press = function() {
+    player.vx = playerSpeed;
+    player.vy = 0;
+  };
+  right.release = function() {
+    if (!left.isDown && player.vy === 0) {
+      player.vx = 0;
+    }
+  };
+
+  //Down
+  down.press = function() {
+    player.vy = playerSpeed;
+    player.vx = 0;
+  };
+  down.release = function() {
+    if (!up.isDown && player.vx === 0) {
+      player.vy = 0;
+    }
+  };
+
+
 
 app.ticker.add(function(delta) {
 addOverTime(moss, delta);
@@ -134,7 +191,10 @@ addOverTime(mushroom, delta);
   //   console.log(time, " waiting for ", timedElements[element].timestamp);
   //   waitForNext(time, timedElements[element].timestamp);
   // }
-
+  console.log(player.vx, player.vy);
+  player.x += player.vx;
+  player.y += player.vy;
+  stats.update();
 });
 
 
@@ -143,7 +203,7 @@ addOverTime(mushroom, delta);
 function addElement(options){
   var newElement = PIXI.Sprite.fromImage(options.image);
   newElement.anchor.set(0.5);
-  newElement.zIdex = options.zindex;
+  newElement.zIndex = options.zindex;
   newElement.width = options.width || 512;
   newElement.height = options.height || 512;
   newElement.x = options.x || app.renderer.width / 2;

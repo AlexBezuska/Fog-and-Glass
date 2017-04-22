@@ -1,6 +1,5 @@
 console.log("keyboard system loaded");
-module.exports = {
-  getKey: function(keyCode) {
+module.exports = function(keyCode) {
     var key = {};
     key.code = keyCode;
     key.isDown = false;
@@ -17,7 +16,7 @@ module.exports = {
       event.preventDefault();
     };
 
-    //The `upHandler`
+  
     key.upHandler = function(event) {
       if (event.keyCode === key.code) {
         if (key.isDown && key.release) key.release();
@@ -35,5 +34,4 @@ module.exports = {
       "keyup", key.upHandler.bind(key), false
     );
     return key;
-  }
 };
